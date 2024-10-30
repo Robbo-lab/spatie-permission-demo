@@ -13,9 +13,12 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::with('user')->get();
-        dd($articles);
-        return view('articles.index', compact('articles'));
+        if (Auth::user()->can('publish articles')) {
+            $articles = Article::with('user')->get();
+            return view('articles.index', compact('articles'));
+
+            abort(403, 'Unauthorised action.');
+        }
 
         abort(403, 'Unauthorised action.');
     }
@@ -25,7 +28,11 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        //
+        if (Auth::user()->can('publish articles')) {
+            return view('articles.create');
+        }
+        
+        abort(403, 'Unauthorised action.');
     }
 
     /**
@@ -33,7 +40,22 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required',
+        ]);
+
+        if (!Auth::user()->can('publish articles')) {
+            abort(403, 'Unauthorised action.');
+        }
+
+        Article::create([
+            'title' => $request->title,
+            'content' => $request->content,
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->route('articles.index')->with('success', 'Article created successfully.');
     }
 
     /**
@@ -41,30 +63,56 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $article = Article::findOrFail($id); // Fetch the article or return a 404 if not found
+        return view('articles.show', compact('article'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Article $article)
     {
-        //
+        if (Auth::user()->can('edit articles') || Auth::user()->hasRole('admin')) {
+            return view('articles.edit', compact('article'));
+        }
+
+        // abort(403, 'Unauthorised action.');
+        
+        return redirect()->route('articles.index')->with('error', 'You dont have permission to authorise.');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Article $article)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required',
+        ]);
+
+        if (!Auth::user()->can('edit articles')) {
+            abort(403, 'Unauthorised action.');
+        }
+
+        $article->update($request->only(['title', 'content']));
+
+        return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Article $article)
     {
-        //
+        if (!Auth::user()->can('delete articles')) {
+            // abort(403, 'Unauthorised action.');
+
+            return redirect()->route('articles.index')->with('error', 'You dont have permission to authorise.');
+        }
+
+        $article->delete();
+
+        return redirect()->route('articles.index')->with('success', 'Article deleted successfully.');
     }
 }

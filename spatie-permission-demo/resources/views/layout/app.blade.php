@@ -9,8 +9,9 @@
 <body>
     <div class="container mt-4">
         <h1>@yield('title')</h1>
+        <!-- Our reusable flash message component -->
         <x-flash-message />
-        <!-- @include('layout.messages') -->
+        <!-- DONT NEED THIS @include('layout.messages') -->
         @yield('content')
     </div>
 </body>

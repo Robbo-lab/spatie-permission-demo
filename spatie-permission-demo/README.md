@@ -1,66 +1,302 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+#### **Objective:**
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### **Step 1: Create a New Laravel Project**
 
-## About Laravel
+1. **Open Laragon and Start Services:**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    - Start Apache/Nginx and MySQL from the Laragon interface.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+2. **Open Terminal in Laragon:**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    - Click on **Terminal** in Laragon to open the command prompt in the Laragon environment.
 
-## Learning Laravel
+3. **Create Laravel Project:**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    ```bash
+    composer create-project --prefer-dist laravel/laravel spatie-permission-demo
+    ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+4. **Set up Environment File:**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    - Navigate to the project folder:
+        ```bash
+        cd spatie-permission-demo
+        ```
+    - Copy `.env.example` to `.env`:
+        ```bash
+        cp .env.example .env
+        ```
+    - Generate an application key:
+        ```bash
+        php artisan key:generate
+        ```
+    - Open `.env` and configure your database settings.
 
-## Laravel Sponsors
+5. **Create a Database in Laragon:**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    - Open **phpMyAdmin** in Laragon.
+    - Create a database named `spatie_permission_demo`.
 
-### Premium Partners
+6. **Run Migrations:**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+    - Run the initial migrations to set up Laravel’s default tables.
+        ```bash
+        php artisan migrate
+        ```
 
-## Contributing
+7. **Install Sanctum** for API-based authentication:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    ```bash
+    composer require laravel/sanctum
+    ```
 
-## Code of Conduct
+8. **Publish Sanctum configuration** and run migrations:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    ```bash
+    php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+    php artisan migrate
+    ```
 
-## Security Vulnerabilities
+9. **Configure Sanctum for session-based authentication**:
+    - Add your app’s domain to `SANCTUM_STATEFUL_DOMAINS` in `.env`:
+        ```env
+        SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1
+        ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Step 2: Set Up Spatie Laravel Permission for Roles and Permissions
 
-## License
+1. **Install Spatie Laravel Permission**:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```bash
+    composer require spatie/laravel-permission
+    ```
+
+2. **Publish Spatie configuration** and migrate to create the necessary tables:
+
+    ```bash
+    php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+    php artisan migrate
+    ```
+
+3. **Add the `HasRoles` trait** to the `User` model in `app/Models/User.php`:
+
+    ```php
+    use Spatie\Permission\Traits\HasRoles;
+
+    class User extends Authenticatable
+    {
+        use HasRoles;
+        // Other model properties and methods
+    }
+    ```
+
+### Step 3: Define Roles and Permissions in a Seeder
+
+1. **Update the seeder**
+
+2. **Define roles and permissions** in `RolesAndPermissionsSeeder.php`:
+
+3. **Register the seeder** in `DatabaseSeeder.php` and run it:
+    ```php
+    php artisan db:seed
+    ```
+
+### Step 4: Set Up User Authentication with Sanctum
+
+1. **Create an AuthController** for login and logout functionality:
+
+    ```bash
+    php artisan make:controller AuthController
+    ```
+
+2. **Define login and logout methods** in `AuthController`:
+
+    ```php
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate(['email' => 'required|email', 'password' => 'required']);
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/');
+        }
+        return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login');
+    }
+    ```
+
+3. **Create login and logout routes** in `web.php`:
+
+    ```php
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    ```
+
+4. **Create a Blade view for the login form** in `resources/views/auth/login.blade.php`.
+
+### Step 5: Create an Article Model, Controller, and Migration
+
+1. **Generate Article model and migration**:
+
+    ```bash
+    php artisan make:model Article -m
+    ```
+
+2. **Define the Article migration schema** (e.g., title, content, user_id foreign key) and run migrations:
+
+    ```php
+    Schema::create('articles', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->text('content');
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->timestamps();
+    });
+    php artisan migrate
+    ```
+
+3. **Create an ArticleController with resource methods**:
+
+    ```bash
+    php artisan make:controller ArticleController --resource
+    ```
+
+4. **Implement the methods** to display a single article:
+
+    ```php
+    public function show($id)
+    {
+        $article = Article::findOrFail($id);
+        return view('articles.show', compact('article'));
+    }
+    ```
+
+5. **Define resource routes for articles** in `web.php`:
+    ```php
+    Route::resource('articles', ArticleController::class)->middleware('auth');
+    ```
+
+### Step 6: Create Blade Views for Articles
+
+1. **Create the `show.blade.php` view** for displaying a single article in `resources/views/articles/show.blade.php`For example:
+
+    ```blade
+    @extends('layout.app')
+
+    @section('title', $article->title)
+
+    @section('content')
+        <h1>{{ $article->title }}</h1>
+        <p>By {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
+        <div>{{ $article->content }}</div>
+        <a href="{{ route('articles.index') }}">Back to Articles</a>
+    @endsection
+    ```
+
+2. **Add any other necessary views** (e.g., `index`, `create`, `edit`) for listing and managing articles.
+
+### Step 7: Run and Test the Application
+
+1. **Start the Laravel server**:
+
+    ```bash
+    php artisan serve
+    ```
+
+2. **Access the application** at `http://127.0.0.1:8000` and test the following:
+    - **Login and logout** functionality.
+    - **Article CRUD operations**.
+    - **Role and permission checks** (e.g., only users with the `publish articles` permission can create articles).
+
+This setup should provide a fully functional application with Sanctum-based authentication, Spatie permissions, and CRUD operations for articles.
+
+php artisan make:component FlashMessage
+
+When you use `with('error', '...')` or `with('success', '...')` in your controller, Laravel stores these messages in the session. You can then retrieve and display them in your Blade views.
+
+
+### Step 1: Set Messages in the Controller
+
+In your controller, you’re already using `with()` to set flash messages. For example:
+
+```php
+public function destroy(Article $article)
+{
+    if (!Auth::user()->can('delete articles')) {
+        return redirect()->route('articles.index')->with('error', 'You do not have permission to delete articles.');
+    }
+
+    $article->delete();
+
+    return redirect()->route('articles.index')->with('success', 'Article deleted successfully.');
+}
+```
+
+### Step 2: Display Messages in Your Blade View
+
+In your Blade layout or a specific view where you want to display these messages, use the following code to show them:
+
+```blade
+<!-- Displaying success and error messages -->
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+```
+
+Place this code in your main layout file (e.g., `resources/views/layout/app.blade.php`) or directly in a specific view where you want to show the messages.
+
+### Step 3: Optional: Create a Blade Component for Flash Messages
+
+If you want to reuse the message display code, you can create a Blade component, making it easier to include in multiple views.
+
+1. **Create the Component**:
+
+    ```bash
+    php artisan make:component FlashMessage
+    ```
+
+2. **Edit the Component View**: Open `resources/views/components/flash-message.blade.php` and add the session message display logic.
+
+    ```blade
+    <!-- resources/views/components/flash-message.blade.php -->
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+    ```
+
+3. **Include the Component in Your Blade Layout or Views**:
+   In your layout file (e.g., `app.blade.php`), or in specific views where you want to show flash messages, use the component:
+
+    ```blade
+    <!-- Example in a layout or specific view -->
+    <x-flash-message />
+    ```
