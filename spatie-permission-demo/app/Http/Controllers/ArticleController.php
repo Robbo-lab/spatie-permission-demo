@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Article;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
@@ -11,7 +13,11 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        $articles = Article::with('user')->get();
+        dd($articles);
+        return view('articles.index', compact('articles'));
+
+        abort(403, 'Unauthorised action.');
     }
 
     /**
