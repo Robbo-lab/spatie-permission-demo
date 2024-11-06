@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -11,8 +14,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = User::all();
-        return view('user.index', compact('users'));
+        if (Auth::user()->hasRole('admin')){
+            $user = User::all();
+            dd($user);
+            return view('user.index', compact('users'));
+        }
+
+        return redirect()->to('/')->with("error", "You dont have permission to View Users");
     }
 
     /**
