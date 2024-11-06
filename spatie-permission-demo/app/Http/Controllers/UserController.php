@@ -15,9 +15,8 @@ class UserController extends Controller
     public function index()
     {
         if (Auth::user()->hasRole('admin')){
-            $user = User::all();
-            dd($user);
-            return view('user.index', compact('users'));
+            $users = User::all();
+            return view('dashboard.users.index', compact('users'));
         }
 
         return redirect()->to('/')->with("error", "You dont have permission to View Users");
@@ -61,10 +60,15 @@ class UserController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * http://localhost:8000/dashboard/users/1/edit
      */
-    public function edit(string $id)
+    public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        // Get all the permissions
+        $permissions = Permission::all();
+        
+        // return all the permission and the user instance
+        return view('dashboard.users.edit', compact('user', 'permissions'));
     }
 
     /**
