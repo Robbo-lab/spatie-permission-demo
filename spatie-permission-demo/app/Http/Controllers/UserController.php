@@ -93,6 +93,12 @@ class UserController extends Controller
         $validateData = $request->validate(['permissions' => 'array']);
 
         if (Auth::user()->hasRole('admin')){
+            
+            // This is Spatie's syncPermission
+            if ($user->hasRole('admin')) {
+                return redirect()->route('users.index')->with('error', 'You cannot remove permissions from an Administrator. To change a user from an Admin role please change their role.');
+            }
+
             $user->syncPermissions($validateData['permissions']);
             return redirect()->route('users.index')->with('success', 'User permission updated successfully');
         }
