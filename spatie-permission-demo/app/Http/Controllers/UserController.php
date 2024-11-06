@@ -87,6 +87,20 @@ class UserController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+    */
+    public function updatePermissions(Request $request, User $user) {
+        $validateData = $request->validate(['permissions' => 'array']);
+
+        if (Auth::user()->hasRole('admin')){
+            $user->syncPermissions($validateData['permissions']);
+            return redirect()->route('users.index')->with('success', 'User permission updated successfully');
+        }
+
+        return redirect()->to('/')->with("error", "You dont have the role to Update the User Permissions");
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
