@@ -8,7 +8,11 @@ Spatie Permission Docs: https://spatie.be/docs/laravel-permission/v6/installatio
 
 Basic installation, role assignment and model attachment(articles)
 
-## Proposed stage 2
+## Stage 2
+
+Permission assignment route
+
+## Proposed stage 3
 
 Role assignment route
 
